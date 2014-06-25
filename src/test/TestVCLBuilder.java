@@ -17,11 +17,38 @@ public class TestVCLBuilder {
 
 	public static void main(final String[] args) throws IOException {
 		VCLBuilder builder = new VCLBuilder();
-		builder.setValidateHosts(true);
-		builder.putIgnoredSite("www.clicrbs.com.br/manifesto470/");
-		builder.putIgnoredSite("zerohora.com/transferencia");
+		builder.setValidateHosts(false);
+		builder.putIgnoredSite("wp.clicrbs.com.br");
+		builder.putIgnoredSite("www.umlugarespecial.gruporbs.com.br");		
+		builder.putIgnoredSite("midiashow2010.clicrbs.com.br");
+		builder.putIgnoredSite("gruporbs.com.br");
+		builder.putIgnoredSite("painel.clicrbs.com.br");
+		builder.putIgnoredSite("tenisshow.com.br");
+		builder.putIgnoredSite("arvoredenatal.clicrbs.com.br");		
+		builder.putIgnoredSite("clickheat.gruporbs.com.br");
+		builder.putIgnoredSite("www.vivendoaprofissao.com.br");
+		builder.putIgnoredSite("bourbonnamorados.clicrbs.com.br");
+		builder.putIgnoredSite("diadomidia.clicrbs.com.br");		
+		builder.putIgnoredSite("taskfreakkzuka.clicrbs.com.br");
+		builder.putIgnoredSite("www.colunistas.diario.com.br");		
+		builder.putIgnoredSite("noar50anosdevida.com.br");
+		//builder.putIgnoredSite("blumenau160anos.clicrbs.com.br");
+		//builder.putIgnoredSite("chapeco93anos.clicrbs.com.br");
+		builder.putIgnoredSite("an.com.br");
+		builder.putIgnoredSite("www.gruporbs30anossc.com.br");
+		builder.putIgnoredSite("adadmin.clicrbs.com.br");
+		builder.putIgnoredSite("penseimoveis.com.br");
+		builder.putIgnoredSite("www.pensecarros.com.br");		
+		builder.putIgnoredSite("www.pense.com.br");
+		//builder.putIgnoredSite("lages244anos.clicrbs.com.br");
+		builder.putIgnoredSite("mediacenter2.clicrbs.com.br");
+		//builder.putIgnoredSite("saojose261.clicrbs.com.br");
+		builder.putIgnoredSite("s1.cdnrbs.com.br");
+		builder.putIgnoredSite("penseempregos.com.br");
+		builder.putIgnoredSite("feiraopensecarros.com.br");
+		builder.putIgnoredSite("appfb.zerohora.com.br");
 		
-		int ip = 100;
+		
 		
 		//classificados.clicrbs.com.br
 		
@@ -41,8 +68,8 @@ public class TestVCLBuilder {
 				wcFile = new File("/temp/webcache/webcache_dsv.xml");
 				vclFile = new File("/temp/webcache/dsv/default.vcl");
 			} else {
-				wcFile = new File("/temp/webcache/webcache_prd_" + ip + ".xml");
-				vclFile = new File("/temp/webcache/prd" + ip + "/default.vcl");
+				wcFile = new File("/temp/webcache/webcache_RBSSITES.xml");
+				vclFile = new File("/temp/webcache/prd/rbssites/default.vcl");
 				vclFile.getParentFile().mkdirs();
 			}
 		}
@@ -50,6 +77,7 @@ public class TestVCLBuilder {
 		// /temp/webcache/webcache_hlg.xml /temp/webcache/prd/default.vcl
 		
 		File f = wcFile;
+		
 		if(!f.exists()) {
 			System.err.println(args[0] + " not found");
 			return;
@@ -91,7 +119,7 @@ public class TestVCLBuilder {
 		}
 		
 		new VCLWriter(f2).write(vcl);
-		doZip(f2.getParentFile());
+		//doZip(f2.getParentFile());
 		System.out.println("Done");
 	}
 	

@@ -1,9 +1,14 @@
 package test;
 
 import java.io.File;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
@@ -17,18 +22,18 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.rbs.cache.AccessLog;
-import com.rbs.cache.NCSALogBuilder;
 import com.rbs.cache.varnish.Probe;
 import com.rbs.cache.varnish.ProbeBuilder;
 
 public class NamesHost {
 	
-	private static File webCacheXml = new File("/temp/webcache/webcache_prd_100.xml");
+	private static File webCacheXml = new File("/temp/webcache/webcache_PEDRITAVM.xml");
 	
 	public static void main(String[] args) throws Exception {
 		//hosts(args);
-		sites(args);
+		//sites(args);
 		//names(args);
+		etcHosts(args);
 	}
 	
 	public static void names(String[] args) throws Exception {
@@ -71,6 +76,52 @@ public class NamesHost {
 			System.out.println(probe);
 			System.out.println("-----------------------------------------------");
 		}		
+	}
+	
+	public static void etcHosts(String[] args) throws Exception {
+		
+		XPathFactory xPathfactory = XPathFactory.newInstance();
+		XPath xpath = xPathfactory.newXPath();
+
+		Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(webCacheXml);
+
+		XPathExpression expr = xpath.compile("//SITE");
+		XPathExpression alias = xpath.compile("ALIAS");
+		
+		XPathExpression accessLog = xpath.compile("ACCESSLOG");
+		
+		NodeList list = (NodeList) expr.evaluate(document, XPathConstants.NODESET);
+		
+		List<AccessLog> logs = new LinkedList<AccessLog>();
+		
+		AccessLog defaultLog = new AccessLog();
+		defaultLog.setName("access_log");
+		logs.add(defaultLog);
+		
+		for (int x = 0; x < list.getLength(); x++) {
+			Element e = (Element) list.item(x);
+			
+			if("443".equals(e.getAttribute("PORT"))) {
+				continue;
+			}
+			
+			Set<String> unique = new HashSet<String>();
+			NodeList aliases = (NodeList) alias.evaluate(e, XPathConstants.NODESET);
+			
+			String target = "10.242.20.38\t";
+			
+			System.out.println(target + e.getAttribute("NAME"));
+			
+			if("it".equals(e.getAttribute("NAME"))) {
+				for (int y = 0; y < aliases.getLength(); y++) {
+					String host = ((Element) aliases.item(y)).getAttribute("NAME");
+					if(unique.add(host)) {
+						System.out.println(target + host);
+					}				
+				}
+			}
+			//System.out.println();
+		}
 	}
 	
 	public static void sites(String[] args) throws Exception {
@@ -167,28 +218,22 @@ public class NamesHost {
 			
 			NodeList aliases = (NodeList) alias.evaluate(e, XPathConstants.NODESET);
 			
+			System.out.println(e.getAttribute("NAME") + "\t[" + getHost(e.getAttribute("NAME")) + "]");
+			
 			for (int y = 0; y < aliases.getLength(); y++) {
 				String host = ((Element) aliases.item(y)).getAttribute("NAME");
 				log.putHost(host);				
-				//System.out.println("\t" + host);
-			}
-			//System.out.println();
-		}
-		
-		/*
-		for(AccessLog log : logs) {
-			System.out.println(log.getName());
-			for(String host : log.getHosts()) {
-				System.out.println("\t" + host);
+				System.out.println("\t" + host + "\t[" + getHost(host) + "]");
 			}
 			System.out.println();
 		}
-		*/
-		
-		for(AccessLog log : logs) {
-			if(log.getName().equals("access_log_hagah")) {
-				System.out.println(new NCSALogBuilder().getNCSALog(log));
-			}
+	}
+	
+	private static final String getHost(final String host) {
+		try {
+			return InetAddress.getByName(host).getHostAddress();
+		} catch (UnknownHostException e) {
+			return "Unknown Host";
 		}
 	}
 

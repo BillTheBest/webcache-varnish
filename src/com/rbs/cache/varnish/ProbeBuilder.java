@@ -96,12 +96,14 @@ public class ProbeBuilder {
 		HttpURLConnection con = (HttpURLConnection) new URL("http://" + host + port + uri).openConnection();
 		con.setRequestProperty("User-Agent", "Mozilla/5.0 (Lincolm Criando Probes)");
 		con.connect();
-		con.getInputStream();
 		
 		try {
+			con.getInputStream();
 			Matcher m = pattern.matcher(con.getHeaderField(null));
 			m.matches();
 			return m.group(1);
+		} catch(IOException e) {
+			return Integer.toString(con.getResponseCode());
 		} finally {
 			con.disconnect();
 		}
